@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import prettier from 'eslint-plugin-prettier'
+import importPlugin from 'eslint-plugin-import'
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
@@ -18,11 +19,14 @@ export default tseslint.config([
     ],
     plugins: {
       prettier: prettier,
+      import: importPlugin,
     },
     rules: {
       'prettier/prettier': 'error',
       semi: 'off', // Let Prettier handle semicolons
       '@typescript-eslint/semi': 'off', // Let Prettier handle semicolons
+      'no-console': 'error', // Prevent console.log statements
+      'import/no-relative-parent-imports': 'error', // Prevent relative imports
     },
     languageOptions: {
       ecmaVersion: 2020,

@@ -1,6 +1,7 @@
 from typing import List
 
 from django.contrib.auth import authenticate
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
@@ -57,6 +58,13 @@ def login(request, payload: LoginSchema):
             "driver": None,
             "message": "Invalid credentials",
         }
+
+
+@api.post("/logout")
+def logout(request):
+    """Log out the current user (session-based)"""
+    django_logout(request)
+    return {"success": True, "message": "Logged out successfully"}
 
 
 @api.get("/trips", response=List[TripSchema])

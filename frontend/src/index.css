@@ -1,1 +1,21 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@theme {
+  --color-base: #1a1a1a;
+  --color-brand: #ff6b35;
+  --color-accent: #8b4513;
+  --color-highlight: #ff8c00;
+  --color-surface: #2d2d2d;
+
+  --text-base: 1.5rem;
+  --text-lg: calc(var(--text-base) * 1.125);
+  --text-xl: calc(var(--text-base) * 1.25);
+  --text-2xl: calc(var(--text-base) * 1.5);
+  --text-3xl: calc(var(--text-base) * 1.875);
+  --text-4xl: calc(var(--text-base) * 2.25);
+  --text-5xl: calc(var(--text-base) * 2.625);
+  --text-6xl: calc(var(--text-base) * 3);
+  --text-7xl: calc(var(--text-base) * 3.375);
+
+  --spacing: 0.5rem;
+}
