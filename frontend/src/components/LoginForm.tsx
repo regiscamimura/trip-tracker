@@ -27,9 +27,7 @@ export default function LoginForm() {
     <div className='min-h-screen bg-base flex items-center justify-center p-4'>
       <div className='max-w-md w-full space-y-6'>
         <div className='text-center'>
-          <h1 className='text-2xl text-brand uppercase font-bold'>
-            Trip Tracker
-          </h1>
+          <h1 className='text-2xl text-brand uppercase'>Trip Tracker</h1>
         </div>
 
         <form className='space-y-4' onSubmit={handleSubmit}>

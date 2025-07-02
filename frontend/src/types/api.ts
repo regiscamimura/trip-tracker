@@ -4,365 +4,784 @@
  */
 
 export interface paths {
-  '/api/login': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Login
-     * @description Authenticate user and return user data
-     */
-    post: operations['trips_api_login']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/logout': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * Logout
-     * @description Log out the current user (session-based)
-     */
-    post: operations['trips_api_logout']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/trips': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * List Trips
-     * @description Get all trips
-     */
-    get: operations['trips_api_list_trips']
-    put?: never
-    /**
-     * Create Trip
-     * @description Create a new trip
-     */
-    post: operations['trips_api_create_trip']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/trips/{trip_id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * Get Trip
-     * @description Get a specific trip by ID
-     */
-    get: operations['trips_api_get_trip']
-    /**
-     * Update Trip
-     * @description Update a trip
-     */
-    put: operations['trips_api_update_trip']
-    post?: never
-    /**
-     * Delete Trip
-     * @description Delete a trip
-     */
-    delete: operations['trips_api_delete_trip']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+    "/api/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login
+         * @description Authenticate user and return user data
+         */
+        post: operations["trips_api_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Log out the current user (session-based)
+         */
+        post: operations["trips_api_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/daily-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Daily Logs
+         * @description Get all daily logs
+         */
+        get: operations["trips_api_list_daily_logs"];
+        put?: never;
+        /**
+         * Create Daily Log
+         * @description Create a new daily log
+         */
+        post: operations["trips_api_create_daily_log"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/daily-logs/{daily_log_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Daily Log
+         * @description Get a specific daily log by ID
+         */
+        get: operations["trips_api_get_daily_log"];
+        /**
+         * Update Daily Log
+         * @description Update a daily log
+         */
+        put: operations["trips_api_update_daily_log"];
+        post?: never;
+        /**
+         * Delete Daily Log
+         * @description Delete a daily log
+         */
+        delete: operations["trips_api_delete_daily_log"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/daily-logs/{daily_log_id}/duty-statuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Duty Statuses
+         * @description Get all duty statuses for a daily log
+         */
+        get: operations["trips_api_list_duty_statuses"];
+        put?: never;
+        /**
+         * Create Duty Status
+         * @description Create a new duty status for a daily log
+         */
+        post: operations["trips_api_create_duty_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/duty-statuses/{duty_status_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Duty Status
+         * @description Get a specific duty status by ID
+         */
+        get: operations["trips_api_get_duty_status"];
+        /**
+         * Update Duty Status
+         * @description Update a duty status
+         */
+        put: operations["trips_api_update_duty_status"];
+        post?: never;
+        /**
+         * Delete Duty Status
+         * @description Delete a duty status
+         */
+        delete: operations["trips_api_delete_duty_status"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** Driver */
-    Driver: {
-      /** ID */
-      id?: number | null
-      /** License Number */
-      license_number: string
-      /** Phone */
-      phone: string
-      /** Address */
-      address: string
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string
-    }
-    /** LoginResponseSchema */
-    LoginResponseSchema: {
-      /** Success */
-      success: boolean
-      user?: components['schemas']['User'] | null
-      driver?: components['schemas']['Driver'] | null
-      /** Message */
-      message?: string
-    }
-    /** User */
-    User: {
-      /** ID */
-      id?: number | null
-      /** Last Login */
-      last_login?: string | null
-      /**
-       * Superuser Status
-       * @description Designates that this user has all permissions without explicitly assigning them.
-       * @default false
-       */
-      is_superuser: boolean
-      /**
-       * Username
-       * @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
-       */
-      username: string
-      /** First Name */
-      first_name?: string | null
-      /** Last Name */
-      last_name?: string | null
-      /** Email Address */
-      email?: string | null
-      /**
-       * Staff Status
-       * @description Designates whether the user can log into this admin site.
-       * @default false
-       */
-      is_staff: boolean
-      /**
-       * Active
-       * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
-       * @default true
-       */
-      is_active: boolean
-      /**
-       * Date Joined
-       * Format: date-time
-       */
-      date_joined?: string
-    }
-    /** LoginSchema */
-    LoginSchema: {
-      /** Username */
-      username: string
-      /** Password */
-      password: string
-    }
-    /** Trip */
-    Trip: {
-      /** ID */
-      id?: number | null
-      /** Driver */
-      driver: number
-      /** Co Driver */
-      co_driver?: number | null
-      /** Truck */
-      truck: number
-      /** Trailer */
-      trailer: number
-      /**
-       * Status
-       * @default planning
-       */
-      status: string
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string
-    }
-  }
-  responses: never
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+    schemas: {
+        /** Driver2 */
+        Driver2: {
+            /** ID */
+            id?: number | null;
+            /** User */
+            user: components["schemas"]["User3"];
+            /** License Number */
+            license_number: string;
+            /** Phone */
+            phone: string;
+            /** Address */
+            address: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** Group */
+        Group: {
+            /** ID */
+            id?: number | null;
+            /** Name */
+            name: string;
+            /** Permissions */
+            permissions: number[];
+        };
+        /** LoginResponseSchema */
+        LoginResponseSchema: {
+            /** Success */
+            success: boolean;
+            user?: components["schemas"]["User2"] | null;
+            driver?: components["schemas"]["Driver2"] | null;
+            /** Message */
+            message?: string;
+        };
+        /** Permission */
+        Permission: {
+            /** ID */
+            id?: number | null;
+            /** Name */
+            name: string;
+            /** Content Type */
+            content_type: number;
+            /** Codename */
+            codename: string;
+        };
+        /** User2 */
+        User2: {
+            /** ID */
+            id?: number | null;
+            /** Last Login */
+            last_login?: string | null;
+            /**
+             * Superuser Status
+             * @description Designates that this user has all permissions without explicitly assigning them.
+             * @default false
+             */
+            is_superuser: boolean;
+            /**
+             * Username
+             * @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+             */
+            username: string;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /** Email Address */
+            email?: string | null;
+            /**
+             * Staff Status
+             * @description Designates whether the user can log into this admin site.
+             * @default false
+             */
+            is_staff: boolean;
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Date Joined
+             * Format: date-time
+             */
+            date_joined?: string;
+        };
+        /** User3 */
+        User3: {
+            /** ID */
+            id?: number | null;
+            /** Password */
+            password: string;
+            /** Last Login */
+            last_login?: string | null;
+            /**
+             * Superuser Status
+             * @description Designates that this user has all permissions without explicitly assigning them.
+             * @default false
+             */
+            is_superuser: boolean;
+            /**
+             * Username
+             * @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+             */
+            username: string;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /** Email Address */
+            email?: string | null;
+            /**
+             * Staff Status
+             * @description Designates whether the user can log into this admin site.
+             * @default false
+             */
+            is_staff: boolean;
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Date Joined
+             * Format: date-time
+             */
+            date_joined?: string;
+            /**
+             * Groups
+             * @description The groups this user belongs to. A user will get all permissions granted to each of their groups.
+             */
+            groups: components["schemas"]["Group"][];
+            /**
+             * User Permissions
+             * @description Specific permissions for this user.
+             */
+            user_permissions: components["schemas"]["Permission"][];
+        };
+        /** LoginSchema */
+        LoginSchema: {
+            /** Username */
+            username: string;
+            /** Password */
+            password: string;
+        };
+        /** DailyLog */
+        DailyLog: {
+            /** ID */
+            id?: number | null;
+            driver: components["schemas"]["Driver"];
+            truck: components["schemas"]["Truck"];
+            trailer: components["schemas"]["Trailer"];
+            /**
+             * Status
+             * @default planning
+             */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** Driver */
+        Driver: {
+            /** ID */
+            id?: number | null;
+            user: components["schemas"]["User"];
+            /** License Number */
+            license_number: string;
+            /** Phone */
+            phone: string;
+            /** Address */
+            address: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** Trailer */
+        Trailer: {
+            /** ID */
+            id?: number | null;
+            /** Trailer Number */
+            trailer_number: string;
+            /** Trailer Type */
+            trailer_type: string;
+            /** Capacity */
+            capacity: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** Truck */
+        Truck: {
+            /** ID */
+            id?: number | null;
+            /** Truck Number */
+            truck_number: string;
+            /** Make Model */
+            make_model: string;
+            /** Year */
+            year: number;
+            /** License Plate */
+            license_plate: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** User */
+        User: {
+            /** ID */
+            id?: number | null;
+            /** Password */
+            password: string;
+            /** Last Login */
+            last_login?: string | null;
+            /**
+             * Superuser Status
+             * @description Designates that this user has all permissions without explicitly assigning them.
+             * @default false
+             */
+            is_superuser: boolean;
+            /**
+             * Username
+             * @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+             */
+            username: string;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /** Email Address */
+            email?: string | null;
+            /**
+             * Staff Status
+             * @description Designates whether the user can log into this admin site.
+             * @default false
+             */
+            is_staff: boolean;
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Date Joined
+             * Format: date-time
+             */
+            date_joined?: string;
+            /**
+             * Groups
+             * @description The groups this user belongs to. A user will get all permissions granted to each of their groups.
+             */
+            groups: number[];
+            /**
+             * User Permissions
+             * @description Specific permissions for this user.
+             */
+            user_permissions: number[];
+        };
+        /** DailyLogCreateInput */
+        DailyLogCreateInput: {
+            /** Driver Id */
+            driver_id: number;
+            /** Truck Id */
+            truck_id: number;
+            /** Trailer Id */
+            trailer_id: number;
+            /** Co Driver Id */
+            co_driver_id?: number | null;
+            /**
+             * Status
+             * @default planning
+             */
+            status: string;
+        };
+        /** DutyStatus */
+        DutyStatus: {
+            /** ID */
+            id?: number | null;
+            /** Daily Log */
+            daily_log_id: number;
+            /** Duty Status */
+            duty_status: string;
+            /** Location Address */
+            location_address: string;
+            /** Latitude */
+            latitude?: number | string | null;
+            /** Longitude */
+            longitude?: number | string | null;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp: string;
+            /** Notes */
+            notes?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** DutyStatusCreateInput */
+        DutyStatusCreateInput: {
+            /** Duty Status */
+            duty_status: string;
+            /** Location Address */
+            location_address: string;
+            /** Latitude */
+            latitude?: number | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Timestamp */
+            timestamp: string;
+            /** Notes */
+            notes?: string | null;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  trips_api_login: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginSchema']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['LoginResponseSchema']
-        }
-      }
-    }
-  }
-  trips_api_logout: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  trips_api_list_trips: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Trip'][]
-        }
-      }
-    }
-  }
-  trips_api_create_trip: {
-    parameters: {
-      query: {
-        payload: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Trip']
-        }
-      }
-    }
-  }
-  trips_api_get_trip: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        trip_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Trip']
-        }
-      }
-    }
-  }
-  trips_api_update_trip: {
-    parameters: {
-      query: {
-        payload: string
-      }
-      header?: never
-      path: {
-        trip_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['Trip']
-        }
-      }
-    }
-  }
-  trips_api_delete_trip: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        trip_id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
+    trips_api_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginSchema"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResponseSchema"];
+                };
+            };
+        };
+    };
+    trips_api_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    trips_api_list_daily_logs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyLog"][];
+                };
+            };
+        };
+    };
+    trips_api_create_daily_log: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DailyLogCreateInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyLog"];
+                };
+            };
+        };
+    };
+    trips_api_get_daily_log: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                daily_log_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyLog"];
+                };
+            };
+        };
+    };
+    trips_api_update_daily_log: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                daily_log_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DailyLog"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DailyLog"];
+                };
+            };
+        };
+    };
+    trips_api_delete_daily_log: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                daily_log_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    trips_api_list_duty_statuses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                daily_log_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutyStatus"][];
+                };
+            };
+        };
+    };
+    trips_api_create_duty_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                daily_log_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DutyStatusCreateInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutyStatus"];
+                };
+            };
+        };
+    };
+    trips_api_get_duty_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                duty_status_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutyStatus"];
+                };
+            };
+        };
+    };
+    trips_api_update_duty_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                duty_status_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DutyStatus"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DutyStatus"];
+                };
+            };
+        };
+    };
+    trips_api_delete_duty_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                duty_status_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }

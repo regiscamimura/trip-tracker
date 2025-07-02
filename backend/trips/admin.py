@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Driver, Stop, Trailer, Trip, TripLog, Truck
+from .models import Driver, Trailer, DailyLog, DutyStatus, Truck
 
 
 @admin.register(Driver)
@@ -33,21 +33,15 @@ class TrailerAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]
 
 
-class StopInline(admin.TabularInline):
-    model = Stop
+class DutyStatusInline(admin.TabularInline):
+    model = DutyStatus
     extra = 1
-    fields = ["stop_type", "sequence", "address", "expected_time"]
-
-
-class TripLogInline(admin.TabularInline):
-    model = TripLog
-    extra = 1
-    fields = ["log_type", "location_address", "timestamp", "notes"]
+    fields = ["duty_status", "location_address", "timestamp", "notes"]
     readonly_fields = ["created_at"]
 
 
-@admin.register(Trip)
-class TripAdmin(admin.ModelAdmin):
+@admin.register(DailyLog)
+class DailyLogAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "driver",
@@ -65,10 +59,10 @@ class TripAdmin(admin.ModelAdmin):
         "trailer__trailer_number",
     ]
     readonly_fields = ["created_at", "updated_at"]
-    inlines = [StopInline, TripLogInline]
+    inlines = [DutyStatusInline]
     fieldsets = (
         (
-            "Trip Information",
+            "Daily Log Information",
             {"fields": ("driver", "co_driver", "truck", "trailer", "status")},
         ),
         (
@@ -78,19 +72,10 @@ class TripAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Stop)
-class StopAdmin(admin.ModelAdmin):
-    list_display = ["trip", "stop_type", "sequence", "address", "expected_time"]
-    list_filter = ["stop_type", "expected_time", "created_at"]
-    search_fields = ["trip__driver__user__username", "address"]
+@admin.register(DutyStatus)
+class DutyStatusAdmin(admin.ModelAdmin):
+    list_display = ["daily_log", "duty_status", "location_address", "timestamp"]
+    list_filter = ["duty_status", "timestamp", "created_at"]
+    search_fields = ["daily_log__driver__user__username", "location_address", "notes"]
     readonly_fields = ["created_at"]
-    ordering = ["trip", "sequence"]
-
-
-@admin.register(TripLog)
-class TripLogAdmin(admin.ModelAdmin):
-    list_display = ["trip", "log_type", "location_address", "timestamp", "stop"]
-    list_filter = ["log_type", "timestamp", "created_at"]
-    search_fields = ["trip__driver__user__username", "location_address", "notes"]
-    readonly_fields = ["created_at"]
-    ordering = ["trip", "timestamp"]
+    ordering = ["daily_log", "timestamp"]

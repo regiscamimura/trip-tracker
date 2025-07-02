@@ -23,9 +23,9 @@ class Driver(models.Model):
         eight_days_ago = timezone.now() - timedelta(days=8)
 
         # Get all driving logs for this driver
-        driving_logs = TripLog.objects.filter(
-            trip__driver=self,
-            log_type__in=["driving_start", "driving_stop"],
+        driving_logs = DutyStatus.objects.filter(
+            daily_log__driver=self,
+            duty_status="driving",
             timestamp__gte=eight_days_ago,
         ).order_by("timestamp")
 
@@ -33,10 +33,10 @@ class Driver(models.Model):
         driving_start_time = None
 
         for log in driving_logs:
-            if log.log_type == "driving_start":
+            if driving_start_time is None:
                 driving_start_time = log.timestamp
-            elif log.log_type == "driving_stop" and driving_start_time:
-                # Calculate hours between start and stop
+            else:
+                # Calculate hours between start and this log entry
                 duration = log.timestamp - driving_start_time
                 total_hours += duration.total_seconds() / 3600  # Convert to hours
                 driving_start_time = None
@@ -79,8 +79,8 @@ class Trailer(models.Model):
         return f"{self.trailer_number} - {self.get_trailer_type_display()}"
 
 
-class Trip(models.Model):
-    TRIP_STATUS = [
+class DailyLog(models.Model):
+    LOG_STATUS = [
         ("planning", "Planning"),
         ("active", "Active"),
         ("completed", "Completed"),
@@ -88,75 +88,38 @@ class Trip(models.Model):
     ]
 
     driver = models.ForeignKey(
-        Driver, on_delete=models.CASCADE, related_name="trips_as_driver"
+        Driver, on_delete=models.CASCADE, related_name="daily_logs_as_driver"
     )
     co_driver = models.ForeignKey(
         Driver,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="trips_as_co_driver",
+        related_name="daily_logs_as_co_driver",
     )
     truck = models.ForeignKey(Truck, on_delete=models.CASCADE)
     trailer = models.ForeignKey(Trailer, on_delete=models.CASCADE)
 
-    status = models.CharField(max_length=20, choices=TRIP_STATUS, default="planning")
+    status = models.CharField(max_length=20, choices=LOG_STATUS, default="planning")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Trip {self.id} - {self.driver}"
+        return f"Daily Log {self.id} - {self.driver}"
 
 
-class Stop(models.Model):
-    STOP_TYPES = [
-        ("pickup", "Pickup"),
-        ("dropoff", "Dropoff"),
+class DutyStatus(models.Model):
+    DUTY_STATUSES = [
+        ("off_duty", "Off Duty"),
+        ("sleeper_berth", "Sleeper Berth"),
+        ("driving", "Driving"),
+        ("on_duty", "On Duty"),
     ]
 
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="stops")
-    stop_type = models.CharField(max_length=10, choices=STOP_TYPES)
-    sequence = models.IntegerField()
-    address = models.TextField()
-    latitude = models.DecimalField(
-        max_digits=9, decimal_places=6, null=True, blank=True
-    )
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, null=True, blank=True
-    )
-    expected_time = models.DateTimeField(null=True, blank=True)
-    notes = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["sequence"]
-        unique_together = ["trip", "sequence"]
-
-    def __str__(self):
-        return f"{self.trip} - {self.get_stop_type_display()} #{self.sequence}"
-
-
-class TripLog(models.Model):
-    LOG_TYPES = [
-        ("start_trip", "Start Trip"),
-        ("stop_trip", "Stop Trip"),
-        ("fueling", "Fueling"),
-        ("rest_break", "Rest Break"),
-        ("pickup", "Pickup"),
-        ("dropoff", "Dropoff"),
-        ("driving_start", "Driving Start"),
-        ("driving_stop", "Driving Stop"),
-        ("inspection", "Inspection"),
-        ("other", "Other"),
-    ]
-
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="logs")
-    stop = models.ForeignKey(
-        Stop, on_delete=models.SET_NULL, null=True, blank=True, related_name="logs"
-    )
-    log_type = models.CharField(max_length=20, choices=LOG_TYPES)
-
-    # Location fields (can be different from stop location for activities like fueling)
+    daily_log = models.ForeignKey(DailyLog, on_delete=models.CASCADE, related_name="duty_statuses")
+    duty_status = models.CharField(max_length=20, choices=DUTY_STATUSES)
+    
+    # Location fields for where the status change occurred
     location_address = models.TextField()
     latitude = models.DecimalField(
         max_digits=9, decimal_places=6, null=True, blank=True
@@ -173,4 +136,4 @@ class TripLog(models.Model):
         ordering = ["timestamp"]
 
     def __str__(self):
-        return f"{self.trip} - {self.get_log_type_display()} at {self.timestamp}"
+        return f"{self.daily_log} - {self.get_duty_status_display()} at {self.timestamp}"

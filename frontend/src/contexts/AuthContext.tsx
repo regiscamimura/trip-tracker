@@ -1,7 +1,9 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import { api } from '@/api/Api'
-import type { User } from '@/api/Api'
+import type { components } from '@/types/api'
 import { AuthContext, type AuthContextType } from './AuthContext'
+
+type User = components['schemas']['User']
 
 interface AuthProviderProps {
   children: ReactNode
@@ -34,26 +36,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   const login = async (username: string, password: string) => {
-    const response = await api.login({ username, password })
+    const { data, error } = await api.POST('/api/login', {
+      body: { username, password },
+    })
 
-    if (response.success && response.user) {
-      setUser(response.user)
+    if (error) {
+      throw new Error(error.message || 'Login failed')
+    }
 
-      // Store the token if your API returns one
-      // For session-based auth, you might not need to store a token
-      // but you could store user info or session ID
-      if (response.user) {
-        // Store user info in localStorage for persistence
-        localStorage.setItem('user_info', JSON.stringify(response.user))
-      }
+    if (data?.success && data.user) {
+      setUser(data.user)
+
+      // Store user info in localStorage for persistence
+      localStorage.setItem('user_info', JSON.stringify(data.user))
     } else {
-      throw new Error(response.message || 'Login failed')
+      throw new Error(data?.message || 'Login failed')
     }
   }
 
   const logout = async () => {
     try {
-      await api.logout()
+      await api.POST('/api/logout')
     } catch {
       // Logout failed, but we still clear the session
     } finally {
@@ -63,7 +66,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const clearSession = () => {
     setUser(null)
-    api.clearAuthToken()
     localStorage.removeItem('user_info')
   }
 
