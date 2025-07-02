@@ -1,0 +1,32 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$demo123$demo123",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "demo",
+      "first_name": "John",
+      "last_name": "Driver",
+      "email": "demo@triptracker.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-01T00:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "trips.driver",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "license_number": "CDL123456789",
+      "phone": "+1-555-0123",
+      "address": "123 Trucker Lane, Dallas, TX 75201",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+] 

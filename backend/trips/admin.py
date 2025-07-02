@@ -35,7 +35,7 @@ class TripLogInline(admin.TabularInline):
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
-    list_display = ['id', 'driver', 'co_driver', 'truck', 'trailer', 'status', 'current_cycle_hours', 'created_at']
+    list_display = ['id', 'driver', 'co_driver', 'truck', 'trailer', 'status', 'created_at']
     list_filter = ['status', 'created_at', 'truck', 'trailer']
     search_fields = ['driver__user__username', 'co_driver__user__username', 'truck__truck_number', 'trailer__trailer_number']
     readonly_fields = ['created_at', 'updated_at']
@@ -43,9 +43,6 @@ class TripAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Trip Information', {
             'fields': ('driver', 'co_driver', 'truck', 'trailer', 'status')
-        }),
-        ('Cycle Information', {
-            'fields': ('current_cycle_hours',)
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

@@ -12,6 +12,39 @@ class Driver(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.license_number}"
+    
+    def get_current_cycle_hours(self):
+        """Calculate current cycle hours from TripLog entries in the last 8 days"""
+        from datetime import datetime, timedelta
+        from django.utils import timezone
+        
+        # Get logs from last 8 days
+        eight_days_ago = timezone.now() - timedelta(days=8)
+        
+        # Get all driving logs for this driver
+        driving_logs = TripLog.objects.filter(
+            trip__driver=self,
+            log_type__in=['driving_start', 'driving_stop'],
+            timestamp__gte=eight_days_ago
+        ).order_by('timestamp')
+        
+        total_hours = 0
+        driving_start_time = None
+        
+        for log in driving_logs:
+            if log.log_type == 'driving_start':
+                driving_start_time = log.timestamp
+            elif log.log_type == 'driving_stop' and driving_start_time:
+                # Calculate hours between start and stop
+                duration = log.timestamp - driving_start_time
+                total_hours += duration.total_seconds() / 3600  # Convert to hours
+                driving_start_time = None
+        
+        return round(total_hours, 2)
+    
+    def get_remaining_hours(self):
+        """Get remaining hours (70 - current_cycle_hours)"""
+        return max(0, 70 - self.get_current_cycle_hours())
 
 class Truck(models.Model):
     truck_number = models.CharField(max_length=20, unique=True)
@@ -55,7 +88,6 @@ class Trip(models.Model):
     truck = models.ForeignKey(Truck, on_delete=models.CASCADE)
     trailer = models.ForeignKey(Trailer, on_delete=models.CASCADE)
     
-    current_cycle_hours = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(70)])
     status = models.CharField(max_length=20, choices=TRIP_STATUS, default='planning')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

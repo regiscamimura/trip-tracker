@@ -1,0 +1,26 @@
+[
+  {
+    "model": "trips.truck",
+    "pk": 1,
+    "fields": {
+      "truck_number": "T001",
+      "make_model": "Freightliner Cascadia",
+      "year": 2022,
+      "license_plate": "TX-12345",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "trips.truck",
+    "pk": 2,
+    "fields": {
+      "truck_number": "T002",
+      "make_model": "Peterbilt 579",
+      "year": 2021,
+      "license_plate": "TX-67890",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+] 

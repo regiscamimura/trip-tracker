@@ -1,0 +1,35 @@
+[
+  {
+    "model": "trips.trailer",
+    "pk": 1,
+    "fields": {
+      "trailer_number": "TR001",
+      "trailer_type": "box",
+      "capacity": "53 feet, 80,000 lbs",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "trips.trailer",
+    "pk": 2,
+    "fields": {
+      "trailer_number": "TR002",
+      "trailer_type": "flatbed",
+      "capacity": "48 feet, 70,000 lbs",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "trips.trailer",
+    "pk": 3,
+    "fields": {
+      "trailer_number": "TR003",
+      "trailer_type": "refrigerated",
+      "capacity": "53 feet, 75,000 lbs",
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+] 
