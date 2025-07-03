@@ -28,6 +28,26 @@ export default function LoginForm() {
       <div className='max-w-md w-full space-y-6'>
         <div className='text-center'>
           <h1 className='text-2xl text-brand uppercase'>Trip Tracker</h1>
+          <p className='text-sm text-gray-500 mt-2'>
+            A sample app by{' '}
+            <a
+              href='https://regiscamimura.com'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-accent hover:text-brand underline'
+            >
+              Regis Camimura
+            </a>{' '}
+            for{' '}
+            <a
+              href='https://spotter.na.teamtailor.com/'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-accent hover:text-brand underline'
+            >
+              Spotter.Ai
+            </a>
+          </p>
         </div>
 
         <form className='space-y-4' onSubmit={handleSubmit}>

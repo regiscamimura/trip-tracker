@@ -35,3 +35,4 @@ npm-debug.log*
 # Build files
 frontend/build/
 frontend/dist/
+.vercel

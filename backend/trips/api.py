@@ -13,6 +13,11 @@ from .models import Driver, DailyLog, Truck, Trailer, DutyStatus
 # Create API instance
 api = NinjaAPI()
 
+@api.get("/")
+def api_root(request):
+    """API root endpoint for health checks"""
+    return {"message": "Trip Tracker API is running", "status": "ok"}
+
 # Auto-generate schema from model
 DailyLogSchema = create_schema(DailyLog, depth=2, exclude=["co_driver"])
 DailyLogCreateSchema = create_schema(DailyLog, exclude=["id", "created_at", "updated_at"])
