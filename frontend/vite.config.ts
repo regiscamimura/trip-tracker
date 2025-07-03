@@ -12,10 +12,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  envDir: resolve(__dirname, '..'), // Look for .env in parent directory (project root)
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
-  },
+  envDir: resolve(process.cwd(), '..'), // Look for .env in parent directory (project root)
 })

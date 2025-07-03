@@ -386,7 +386,7 @@ export function useSimulator() {
       const { data: dailyLog, error: dailyLogError } = await api.POST(
         '/api/daily-logs',
         {
-          body: dailyLogData as components['schemas']['DailyLog'],
+          body: dailyLogData as components['schemas']['DailyLogCreateInput'],
         }
       )
 
@@ -405,11 +405,17 @@ export function useSimulator() {
             body: {
               duty_status: event.status,
               location_address: event.location,
-              latitude: event.lat,
-              longitude: event.lng,
+              latitude:
+                typeof event.lat === 'string'
+                  ? parseFloat(event.lat)
+                  : event.lat,
+              longitude:
+                typeof event.lng === 'string'
+                  ? parseFloat(event.lng)
+                  : event.lng,
               timestamp: event.time.toISOString(),
               notes: event.notes,
-            } as components['schemas']['DutyStatus'],
+            } as components['schemas']['DutyStatusCreateInput'],
           }
         )
 

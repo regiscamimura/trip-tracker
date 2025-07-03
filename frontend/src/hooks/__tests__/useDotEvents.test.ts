@@ -1,8 +1,12 @@
 import { useDotEvents } from '../useDotEvents'
 import dutyStatusesFixture from '@/__fixtures__/sorted_timestamps.json'
+import type { components } from '@/types/api'
 
 // Mock data from sorted_timestamps.json fixture
-const mockDutyStatuses = dutyStatusesFixture as unknown[]
+const mockDutyStatuses = dutyStatusesFixture.map(item => ({
+  ...item,
+  daily_log_id: item.daily_log,
+})) as components['schemas']['DutyStatus'][]
 
 describe('useDotEvents', () => {
   it('should generate correct dot events from sorted duty statuses', () => {

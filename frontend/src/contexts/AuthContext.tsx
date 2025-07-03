@@ -41,11 +41,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
 
     if (error) {
-      throw new Error(error.message || 'Login failed')
+      throw new Error('Login failed')
     }
 
     if (data?.success && data.user) {
-      setUser(data.user)
+      setUser(data.user as User)
 
       // Store user info in localStorage for persistence
       localStorage.setItem('user_info', JSON.stringify(data.user))

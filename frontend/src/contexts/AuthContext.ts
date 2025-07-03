@@ -1,5 +1,7 @@
 import { createContext } from 'react'
-import type { User } from '@/api/Api'
+import type { components } from '@/types/api'
+
+type User = components['schemas']['User']
 
 export interface AuthContextType {
   user: User | null

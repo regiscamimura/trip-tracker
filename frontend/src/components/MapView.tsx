@@ -45,7 +45,7 @@ import 'leaflet/dist/leaflet.css'
 
 // Fix for Leaflet marker icons in React
 import L from 'leaflet'
-delete (L.Icon.Default.prototype as unknown)._getIconUrl
+delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -102,7 +102,7 @@ function MapBounds({ dutyStatuses }: { dutyStatuses: DutyStatus[] }) {
 
   useEffect(() => {
     if (dutyStatuses.length > 0) {
-      const bounds = new LatLngBounds()
+      const bounds = new LatLngBounds([])
       dutyStatuses.forEach(status => {
         if (status.latitude && status.longitude) {
           bounds.extend([Number(status.latitude), Number(status.longitude)])
@@ -125,7 +125,7 @@ export default function MapView({
   const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(
     null
   )
-  const [mapRef, setMapRef] = useState<unknown>(null)
+  const [mapRef, setMapRef] = useState<any>(null)
   const [roadCoordinates, setRoadCoordinates] = useState<
     Array<{ lat: number; lng: number }>
   >([])
@@ -398,7 +398,7 @@ export default function MapView({
                 opacity: 1,
                 fillOpacity: 0.3,
               }}
-              iconCreateFunction={cluster => {
+              iconCreateFunction={(cluster: any) => {
                 const count = cluster.getChildCount()
                 const size = count > 10 ? 'lg' : count > 5 ? 'md' : 'sm'
                 const colors = {
