@@ -77,6 +77,17 @@ export const useDotEvents = (dutyStatuses: DutyStatus[]) => {
       }
     })
 
+    // Add end-of-day entry (copy of last entry at end of hour 23)
+    if (sorted.length > 0) {
+      const lastEntry = sorted[sorted.length - 1]
+      events.push({
+        id: (lastEntry.id || 0) + 0.2, // Use positive decimal to indicate end midnight entry
+        hour: 23, // Last hour of the day
+        percentage: 100, // End of the hour
+        status: lastEntry.duty_status,
+      })
+    }
+
     // Remove duplicates
     const unique = events.filter(
       (e, i, arr) =>
@@ -92,22 +103,36 @@ export const useDotEvents = (dutyStatuses: DutyStatus[]) => {
     return unique
   }
 
-  // Check if a specific time slot should show a dot for a given status
-  const shouldShowDot = (hour: number, status: string): boolean => {
+  const getDotEventsByStatus = (): Record<string, Record<number, number[]>> => {
     const events = getAllDotEvents()
-    return events.some(e => e.hour === hour && e.status === status)
+    const result: Record<string, Record<number, number[]>> = {}
+
+    events.forEach(event => {
+      if (!result[event.status]) {
+        result[event.status] = {}
+      }
+      if (!result[event.status][event.hour]) {
+        result[event.status][event.hour] = []
+      }
+      result[event.status][event.hour].push(event.percentage)
+    })
+
+    return result
   }
 
-  // Get the position within the hour for the dot (0%, 25%, 50%, 75%)
-  const getDotPosition = (hour: number, status: string): number => {
-    const events = getAllDotEvents()
-    const event = events.find(e => e.hour === hour && e.status === status)
-    return event?.percentage ?? 0
+  const getGlobalTimeline = (): DotEvent[] => {
+    return getAllDotEvents().sort((a, b) => {
+      // Sort by hour first, then by percentage
+      if (a.hour !== b.hour) {
+        return a.hour - b.hour
+      }
+      return a.percentage - b.percentage
+    })
   }
 
   return {
     getAllDotEvents,
-    shouldShowDot,
-    getDotPosition,
+    getDotEventsByStatus,
+    getGlobalTimeline,
   }
 }

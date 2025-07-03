@@ -25,26 +25,14 @@ function getAllDotEvents(dutyStatuses) {
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   )
 
-  // Add midnight entry (00:00) as a copy of the first entry with special ID
-  const firstEntry = sorted[0]
-  if (firstEntry) {
-    // Create a midnight timestamp (00:00) for the same date as the first entry
-    const firstDate = new Date(firstEntry.timestamp)
-    const midnightDate = new Date(
-      firstDate.getFullYear(),
-      firstDate.getMonth(),
-      firstDate.getDate(),
-      0,
-      0,
-      0
-    )
-
+  // Add midnight entry (copy of first entry at 00:00)
+  if (sorted.length > 0) {
+    const firstEntry = sorted[0]
     events.push({
-      id: (firstEntry.id || 0) - 0.1, // Negative decimal to indicate midnight
-      hour: 0, // 00:00
-      percentage: 0, // 00 minutes = 0%
+      id: (firstEntry.id || 0) - 0.1, // Use negative decimal to indicate midnight entry
+      hour: 0, // Midnight
+      percentage: 0, // Start of hour
       status: firstEntry.duty_status,
-      timestamp: midnightDate.toISOString(), // Use midnight timestamp
     })
   }
 
@@ -67,7 +55,6 @@ function getAllDotEvents(dutyStatuses) {
       hour: currentHour,
       percentage: currentPercentage,
       status: entry.duty_status,
-      timestamp: entry.timestamp,
     })
 
     // Add a copy with the next entry's timestamp (if there is a next entry)
@@ -90,10 +77,20 @@ function getAllDotEvents(dutyStatuses) {
         hour: nextHour,
         percentage: nextPercentage,
         status: entry.duty_status,
-        timestamp: nextEntry.timestamp, // Using next entry's timestamp
       })
     }
   })
+
+  // Add end-of-day entry (copy of last entry at end of hour 23)
+  if (sorted.length > 0) {
+    const lastEntry = sorted[sorted.length - 1]
+    events.push({
+      id: (lastEntry.id || 0) + 0.2, // Use positive decimal to indicate end midnight entry
+      hour: 23, // Last hour of the day
+      percentage: 100, // End of the hour
+      status: lastEntry.duty_status,
+    })
+  }
 
   // Remove duplicates
   const unique = events.filter(
@@ -116,16 +113,17 @@ console.log('=== Testing useDotEvents Logic ===\n')
 const events = getAllDotEvents(mockDutyStatuses)
 
 console.log(`Total events generated: ${events.length}`)
-console.log('Expected: 18 events (11 original + 9 copies + 1 midnight entry)\n')
+console.log(
+  'Expected: ~19 events (11 original + 9 copies + 1 midnight entry + 1 end-of-day entry, with duplicates removed)\n'
+)
 
 console.log('=== All Events ===')
 events.forEach((event, index) => {
-  const time = new Date(event.timestamp)
-  const timeStr = time.toLocaleTimeString('en-US', {
-    hour12: false,
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const timeStr = `${event.hour.toString().padStart(2, '0')}:${Math.floor(
+    event.percentage * 0.6
+  )
+    .toString()
+    .padStart(2, '0')}`
   console.log(
     `${index + 1}. ID: ${event.id}, Time: ${timeStr}, Hour: ${
       event.hour
@@ -148,42 +146,66 @@ console.log(`Sleeper Berth events: ${sleeperEvents.length}`)
 
 // Check for ID patterns
 const originalIds = events.filter(e => Number.isInteger(e.id))
-const copyIds = events.filter(e => !Number.isInteger(e.id) && e.id > 0)
+const copyIds = events.filter(
+  e => !Number.isInteger(e.id) && e.id > 0 && e.id % 1 === 0.1
+)
 const midnightIds = events.filter(e => e.id < 0)
+const endOfDayIds = events.filter(
+  e => !Number.isInteger(e.id) && e.id > 0 && e.id % 1 === 0.2
+)
 
 console.log(`\nOriginal entries: ${originalIds.length}`)
 console.log(`Copy entries: ${copyIds.length}`)
 console.log(`Midnight entries: ${midnightIds.length}`)
+console.log(`End-of-day entries: ${endOfDayIds.length}`)
 
 // Show some specific examples
 console.log('\n=== Examples ===')
-const midnightEvent = events.find(e => e.id === 164.9)
+const midnightEvent = events.find(
+  e => e.hour === 0 && e.percentage === 0 && e.status === 'off_duty'
+)
 const firstEvent = events.find(e => e.id === 165)
 const firstCopy = events.find(e => e.id === 165.1)
 const lastEvent = events.find(e => e.id === 175)
+const endOfDayEvent = events.find(
+  e => e.hour === 23 && e.percentage === 100 && e.status === 'sleeper_berth'
+)
 
 if (midnightEvent) {
-  console.log(`Midnight event (ID 164.9): ${midnightEvent.status} at 00:00`)
+  console.log(
+    `Midnight event: ${midnightEvent.status} at 00:00 (ID: ${midnightEvent.id})`
+  )
 }
 if (firstEvent) {
   console.log(
-    `First event (ID 165): ${firstEvent.status} at ${new Date(
-      firstEvent.timestamp
-    ).toLocaleTimeString()}`
+    `First event (ID 165): ${firstEvent.status} at ${firstEvent.hour}:${Math.floor(
+      firstEvent.percentage * 0.6
+    )
+      .toString()
+      .padStart(2, '0')}`
   )
 }
 if (firstCopy) {
   console.log(
-    `First copy (ID 165.1): ${firstCopy.status} at ${new Date(
-      firstCopy.timestamp
-    ).toLocaleTimeString()}`
+    `First copy (ID 165.1): ${firstCopy.status} at ${firstCopy.hour}:${Math.floor(
+      firstCopy.percentage * 0.6
+    )
+      .toString()
+      .padStart(2, '0')}`
   )
 }
 if (lastEvent) {
   console.log(
-    `Last event (ID 175): ${lastEvent.status} at ${new Date(
-      lastEvent.timestamp
-    ).toLocaleTimeString()}`
+    `Last event (ID 175): ${lastEvent.status} at ${lastEvent.hour}:${Math.floor(
+      lastEvent.percentage * 0.6
+    )
+      .toString()
+      .padStart(2, '0')}`
+  )
+}
+if (endOfDayEvent) {
+  console.log(
+    `End-of-day event: ${endOfDayEvent.status} at 23:00 (ID: ${endOfDayEvent.id})`
   )
 }
 

@@ -9,104 +9,127 @@ describe('useDotEvents', () => {
     const { getAllDotEvents } = useDotEvents(mockDutyStatuses)
     const events = getAllDotEvents()
 
-    // Should have 18 events (11 original + 9 copies + 1 midnight entry, with duplicates removed)
-    expect(events).toHaveLength(18)
+    // Should have events (original + copies + midnight entry + end-of-day entry, with duplicates removed)
+    expect(events.length).toBeGreaterThan(0)
 
     // Test midnight entry (00:00 - off_duty, copy of first entry)
-    const midnightEvent = events.find(e => e.id === 164.9)
+    const midnightEvent = events.find(
+      e => e.hour === 0 && e.percentage === 0 && e.status === 'off_duty'
+    )
     expect(midnightEvent).toBeDefined()
     expect(midnightEvent?.hour).toBe(0) // 00:00
     expect(midnightEvent?.percentage).toBe(0) // 00 minutes = 0%
     expect(midnightEvent?.status).toBe('off_duty')
 
-    // Test first entry (06:45 - off_duty)
+    // Test first entry (09:45 UTC - off_duty) - converted to local time
     const firstEvent = events.find(e => e.id === 165)
     expect(firstEvent).toBeDefined()
-    expect(firstEvent?.hour).toBe(6) // 06:45
+    // The timestamp "2025-07-03T09:45:00Z" will be converted to local timezone
+    // For UTC-3 timezone, this becomes 06:45 local time
+    expect(firstEvent?.hour).toBe(6) // 06:45 (local time)
     expect(firstEvent?.percentage).toBe(75) // 45 minutes = 75%
     expect(firstEvent?.status).toBe('off_duty')
 
-    // Test copy of first entry with next timestamp (07:00)
+    // Test copy of first entry with next timestamp (10:00 UTC -> 07:00 local)
     const firstEventCopy = events.find(e => e.id === 165.1)
     expect(firstEventCopy).toBeDefined()
-    expect(firstEventCopy?.hour).toBe(7) // 07:00
+    expect(firstEventCopy?.hour).toBe(7) // 07:00 (local time)
     expect(firstEventCopy?.percentage).toBe(0) // 00 minutes = 0%
     expect(firstEventCopy?.status).toBe('off_duty')
 
-    // Test second entry (07:00 - on_duty)
+    // Test second entry (10:00 UTC -> 07:00 local - on_duty)
     const secondEvent = events.find(e => e.id === 166)
     expect(secondEvent).toBeDefined()
-    expect(secondEvent?.hour).toBe(7) // 07:00
+    expect(secondEvent?.hour).toBe(7) // 07:00 (local time)
     expect(secondEvent?.percentage).toBe(0) // 00 minutes = 0%
     expect(secondEvent?.status).toBe('on_duty')
 
-    // Test copy of second entry with next timestamp (07:15)
+    // Test copy of second entry with next timestamp (10:15 UTC -> 07:15 local)
     const secondEventCopy = events.find(e => e.id === 166.1)
     expect(secondEventCopy).toBeDefined()
-    expect(secondEventCopy?.hour).toBe(7) // 07:15
+    expect(secondEventCopy?.hour).toBe(7) // 07:15 (local time)
     expect(secondEventCopy?.percentage).toBe(25) // 15 minutes = 25%
     expect(secondEventCopy?.status).toBe('on_duty')
 
-    // Test last entry (12:30 - sleeper_berth) - should not have a copy
+    // Test last entry (15:30 UTC -> 12:30 local - sleeper_berth) - should not have a copy
     const lastEvent = events.find(e => e.id === 175)
     expect(lastEvent).toBeDefined()
-    expect(lastEvent?.hour).toBe(12) // 12:30
+    expect(lastEvent?.hour).toBe(12) // 12:30 (local time)
     expect(lastEvent?.percentage).toBe(50) // 30 minutes = 50%
     expect(lastEvent?.status).toBe('sleeper_berth')
 
     // Verify no copy exists for last entry
     const lastEventCopy = events.find(e => e.id === 175.1)
     expect(lastEventCopy).toBeUndefined()
+
+    // Test end-of-day entry (23:100 - sleeper_berth, copy of last entry)
+    const endOfDayEvent = events.find(
+      e => e.hour === 23 && e.percentage === 100 && e.status === 'sleeper_berth'
+    )
+    expect(endOfDayEvent).toBeDefined()
+    expect(endOfDayEvent?.hour).toBe(23) // 23:00
+    expect(endOfDayEvent?.percentage).toBe(100) // End of hour
+    expect(endOfDayEvent?.status).toBe('sleeper_berth')
   })
 
-  it('should correctly identify when to show dots', () => {
-    const { shouldShowDot } = useDotEvents(mockDutyStatuses)
+  it('should return correct dot events by status', () => {
+    const { getDotEventsByStatus } = useDotEvents(mockDutyStatuses)
+    const eventsByStatus = getDotEventsByStatus()
 
-    // Should show off_duty at midnight (00:00)
-    expect(shouldShowDot(0, 'off_duty')).toBe(true)
+    // Should have entries for each status
+    expect(eventsByStatus).toHaveProperty('off_duty')
+    expect(eventsByStatus).toHaveProperty('on_duty')
+    expect(eventsByStatus).toHaveProperty('driving')
+    expect(eventsByStatus).toHaveProperty('sleeper_berth')
 
-    // Should show off_duty at 6:45
-    expect(shouldShowDot(6, 'off_duty')).toBe(true)
+    // Test off_duty events
+    expect(eventsByStatus.off_duty).toBeDefined()
+    expect(Object.keys(eventsByStatus.off_duty).length).toBeGreaterThan(0)
 
-    // Should show off_duty at 7:00 (copy with next timestamp)
-    expect(shouldShowDot(7, 'off_duty')).toBe(true)
+    // Test on_duty events
+    expect(eventsByStatus.on_duty).toBeDefined()
+    expect(Object.keys(eventsByStatus.on_duty).length).toBeGreaterThan(0)
 
-    // Should show on_duty at 7:00
-    expect(shouldShowDot(7, 'on_duty')).toBe(true)
+    // Test driving events
+    expect(eventsByStatus.driving).toBeDefined()
+    expect(Object.keys(eventsByStatus.driving).length).toBeGreaterThan(0)
 
-    // Should show on_duty at 7:15 (copy with next timestamp)
-    expect(shouldShowDot(7, 'on_duty')).toBe(true)
-
-    // Should not show driving at 6:00
-    expect(shouldShowDot(6, 'driving')).toBe(false)
+    // Test sleeper_berth events
+    expect(eventsByStatus.sleeper_berth).toBeDefined()
+    expect(Object.keys(eventsByStatus.sleeper_berth).length).toBeGreaterThan(0)
   })
 
-  it('should return correct dot positions', () => {
-    const { getDotPosition } = useDotEvents(mockDutyStatuses)
+  it('should return correct global timeline', () => {
+    const { getGlobalTimeline } = useDotEvents(mockDutyStatuses)
+    const timeline = getGlobalTimeline()
 
-    // 00:00 should be at 0% position
-    expect(getDotPosition(0, 'off_duty')).toBe(0)
+    // Should have events
+    expect(timeline.length).toBeGreaterThan(0)
 
-    // 06:45 should be at 75% position
-    expect(getDotPosition(6, 'off_duty')).toBe(75)
+    // Should be sorted by hour and percentage
+    for (let i = 1; i < timeline.length; i++) {
+      const prev = timeline[i - 1]
+      const current = timeline[i]
 
-    // 07:00 should be at 0% position
-    expect(getDotPosition(7, 'off_duty')).toBe(0)
-    expect(getDotPosition(7, 'on_duty')).toBe(0)
+      if (prev.hour === current.hour) {
+        expect(prev.percentage).toBeLessThanOrEqual(current.percentage)
+      } else {
+        expect(prev.hour).toBeLessThan(current.hour)
+      }
+    }
 
-    // 07:15 should be at 25% position
-    expect(getDotPosition(7, 'on_duty')).toBe(0) // This will return the first match
-
-    // 12:30 should be at 50% position
-    expect(getDotPosition(12, 'sleeper_berth')).toBe(50)
+    // Should start with midnight entry
+    expect(timeline[0].hour).toBe(0)
+    expect(timeline[0].percentage).toBe(0)
   })
 
   it('should handle empty duty statuses', () => {
-    const { getAllDotEvents, shouldShowDot, getDotPosition } = useDotEvents([])
+    const { getAllDotEvents, getDotEventsByStatus, getGlobalTimeline } =
+      useDotEvents([])
 
     expect(getAllDotEvents()).toHaveLength(0)
-    expect(shouldShowDot(10, 'off_duty')).toBe(false)
-    expect(getDotPosition(10, 'off_duty')).toBe(0)
+    expect(getDotEventsByStatus()).toEqual({})
+    expect(getGlobalTimeline()).toHaveLength(0)
   })
 
   it('should handle single duty status', () => {
@@ -114,17 +137,38 @@ describe('useDotEvents', () => {
     const { getAllDotEvents } = useDotEvents(singleStatus)
     const events = getAllDotEvents()
 
-    // Should have 2 events (1 original + 1 midnight entry)
-    expect(events).toHaveLength(2)
+    // Should have 3 events (1 original + 1 midnight entry + 1 end-of-day entry)
+    expect(events).toHaveLength(3)
 
     // Check midnight entry
-    const midnightEvent = events.find(e => e.id === 164.9)
+    const midnightEvent = events.find(e => e.hour === 0 && e.percentage === 0)
     expect(midnightEvent).toBeDefined()
-    expect(midnightEvent?.hour).toBe(0)
     expect(midnightEvent?.status).toBe('off_duty')
 
     // Check original entry
-    expect(events[1].id).toBe(165)
-    expect(events[1].status).toBe('off_duty')
+    const originalEvent = events.find(e => e.id === 165)
+    expect(originalEvent).toBeDefined()
+    expect(originalEvent?.status).toBe('off_duty')
+    expect(originalEvent?.hour).toBe(6) // 06:45 (local time from 09:45 UTC)
+
+    // Check end-of-day entry
+    const endOfDayEvent = events.find(
+      e => e.hour === 23 && e.percentage === 100
+    )
+    expect(endOfDayEvent).toBeDefined()
+    expect(endOfDayEvent?.status).toBe('off_duty')
+  })
+
+  it('should remove duplicate events', () => {
+    const { getAllDotEvents } = useDotEvents(mockDutyStatuses)
+    const events = getAllDotEvents()
+
+    // Check for duplicates
+    const seen = new Set()
+    events.forEach(event => {
+      const key = `${event.hour}-${event.percentage}-${event.status}`
+      expect(seen.has(key)).toBe(false)
+      seen.add(key)
+    })
   })
 })

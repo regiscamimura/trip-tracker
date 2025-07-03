@@ -53,13 +53,13 @@ export function useSimulator() {
       const startTime = new Date()
       startTime.setHours(randomHour, randomMinute, 0, 0)
 
-      // Generate realistic truck route for single day (2-3 cities, closer together)
-      const routeLength = Math.floor(Math.random() * 2) + 2 // 2-3 cities
+      // Generate realistic truck route for single day (3-4 cities, longer distances)
+      const routeLength = Math.floor(Math.random() * 2) + 3 // 3-4 cities
       const shuffledRoutes = [...TRUCK_ROUTES].sort(() => Math.random() - 0.5)
       let selectedRoute = shuffledRoutes.slice(0, routeLength)
 
-      // Ensure cities are reasonably close for single-day simulation
-      // Calculate total route distance and limit to ~300km for single day
+      // Ensure cities are reasonably spaced for realistic single-day simulation
+      // Calculate total route distance and aim for ~400-600km for single day
       let totalDistance = 0
       for (let i = 1; i < selectedRoute.length; i++) {
         const prevCity = selectedRoute[i - 1]
@@ -78,38 +78,55 @@ export function useSimulator() {
         totalDistance += R * c
       }
 
-      // If total distance is too long, try to find closer cities
-      if (totalDistance > 300) {
-        // Find cities that are closer together
-        const closeCities = []
+      // If total distance is too short, try to find better routes
+      if (totalDistance < 300) {
+        // Find routes with better distances
+        const betterRoutes = []
         for (let i = 0; i < TRUCK_ROUTES.length; i++) {
           for (let j = i + 1; j < TRUCK_ROUTES.length; j++) {
-            const city1 = TRUCK_ROUTES[i]
-            const city2 = TRUCK_ROUTES[j]
+            for (let k = j + 1; k < TRUCK_ROUTES.length; k++) {
+              const city1 = TRUCK_ROUTES[i]
+              const city2 = TRUCK_ROUTES[j]
+              const city3 = TRUCK_ROUTES[k]
 
-            const R = 6371
-            const dLat = ((city2.lat - city1.lat) * Math.PI) / 180
-            const dLon = ((city2.lng - city1.lng) * Math.PI) / 180
-            const a =
-              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos((city1.lat * Math.PI) / 180) *
+              const R = 6371
+              let routeDistance = 0
+
+              // Calculate distance between city1 and city2
+              const dLat1 = ((city2.lat - city1.lat) * Math.PI) / 180
+              const dLon1 = ((city2.lng - city1.lng) * Math.PI) / 180
+              const a1 =
+                Math.sin(dLat1 / 2) * Math.sin(dLat1 / 2) +
+                Math.cos((city1.lat * Math.PI) / 180) *
+                  Math.cos((city2.lat * Math.PI) / 180) *
+                  Math.sin(dLon1 / 2) *
+                  Math.sin(dLon1 / 2)
+              const c1 = 2 * Math.atan2(Math.sqrt(a1), Math.sqrt(1 - a1))
+              routeDistance += R * c1
+
+              // Calculate distance between city2 and city3
+              const dLat2 = ((city3.lat - city2.lat) * Math.PI) / 180
+              const dLon2 = ((city3.lng - city2.lng) * Math.PI) / 180
+              const a2 =
+                Math.sin(dLat2 / 2) * Math.sin(dLat2 / 2) +
                 Math.cos((city2.lat * Math.PI) / 180) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2)
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-            const distance = R * c
+                  Math.cos((city3.lat * Math.PI) / 180) *
+                  Math.sin(dLon2 / 2) *
+                  Math.sin(dLon2 / 2)
+              const c2 = 2 * Math.atan2(Math.sqrt(a2), Math.sqrt(1 - a2))
+              routeDistance += R * c2
 
-            if (distance <= 200) {
-              // Within 200km
-              closeCities.push([city1, city2])
+              if (routeDistance >= 300 && routeDistance <= 600) {
+                betterRoutes.push([city1, city2, city3])
+              }
             }
           }
         }
 
-        if (closeCities.length > 0) {
-          const randomPair =
-            closeCities[Math.floor(Math.random() * closeCities.length)]
-          selectedRoute = randomPair
+        if (betterRoutes.length > 0) {
+          const randomRoute =
+            betterRoutes[Math.floor(Math.random() * betterRoutes.length)]
+          selectedRoute = randomRoute
         }
       }
 
@@ -121,6 +138,7 @@ export function useSimulator() {
       // Create duty status events
       const events = []
       const currentTime = new Date(startTime)
+      let totalDrivingMinutes = 0 // Track total driving time to stay DOT compliant
 
       // Start day - Off Duty to On Duty
       events.push({
@@ -244,8 +262,8 @@ export function useSimulator() {
         }
 
         // Calculate realistic driving time based on road distance
-        const maxDrivingHours = 3 // Maximum 3 hours between stops for single day
-        const truckSpeed = 60 + Math.random() * 15 // 60-75 km/h
+        const maxDrivingHours = 4 // Maximum 4 hours between stops (DOT compliant)
+        const truckSpeed = 65 + Math.random() * 10 // 65-75 km/h (more realistic highway speed)
         let drivingHours = segmentDistance / truckSpeed
 
         // If driving time would exceed max, cap it
@@ -254,12 +272,26 @@ export function useSimulator() {
         }
 
         // Add some realistic variation (traffic, stops, etc.)
-        const variation = 0.8 + Math.random() * 0.4 // ±20% variation
+        const variation = 0.9 + Math.random() * 0.2 // ±10% variation (more consistent)
         const finalDrivingHours = drivingHours * variation
 
         // Convert to minutes and add to current time
         const drivingMinutes = Math.floor(finalDrivingHours * 60)
-        currentTime.setMinutes(currentTime.getMinutes() + drivingMinutes)
+
+        // Check if this would exceed DOT driving limits (11 hours = 660 minutes)
+        if (totalDrivingMinutes + drivingMinutes > 660) {
+          // Cap the driving time to stay within limits
+          const remainingMinutes = 660 - totalDrivingMinutes
+          if (remainingMinutes > 0) {
+            currentTime.setMinutes(currentTime.getMinutes() + remainingMinutes)
+            totalDrivingMinutes = 660
+          }
+          // Stop adding more driving events
+          break
+        } else {
+          currentTime.setMinutes(currentTime.getMinutes() + drivingMinutes)
+          totalDrivingMinutes += drivingMinutes
+        }
 
         // Add intermediate driving events along the road path
         const intermediateEvents = Math.floor(drivingMinutes / 30) // Every 30 minutes
@@ -301,8 +333,8 @@ export function useSimulator() {
           notes: 'Loading/unloading',
         })
 
-        // Break time (30min-1hr)
-        const breakMinutes = Math.floor(Math.random() * 31) + 30
+        // Break time (15-30min) - more realistic for professional drivers
+        const breakMinutes = Math.floor(Math.random() * 16) + 15
         currentTime.setMinutes(currentTime.getMinutes() + breakMinutes)
 
         // Resume driving
@@ -331,8 +363,9 @@ export function useSimulator() {
         notes: 'End of day',
       })
 
-      // Sleeper berth - add 1 more hour
-      currentTime.setMinutes(currentTime.getMinutes() + 60)
+      // Sleeper berth - add 2-3 hours (more realistic rest time)
+      const sleeperHours = Math.floor(Math.random() * 2) + 2 // 2-3 hours
+      currentTime.setMinutes(currentTime.getMinutes() + sleeperHours * 60)
       events.push({
         time: roundTo15Minutes(new Date(currentTime)),
         status: 'sleeper_berth',
