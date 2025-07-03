@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
+import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,4 +12,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  envDir: resolve(__dirname, '..'), // Look for .env in parent directory (project root)
 })
