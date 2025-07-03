@@ -18,13 +18,13 @@ export default function DailyLogsList({
   onShowChart,
 }: DailyLogsListProps) {
   return (
-    <div className='bg-surface p-4'>
-      <div className='flex justify-between items-center mb-2'>
-        <h2 className='text-xl text-brand'>Your Daily Logs</h2>
+    <div className='bg-surface p-2 sm:p-4'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4'>
+        <h2 className='text-lg sm:text-xl text-brand'>Your Daily Logs</h2>
         <button
           onClick={onRefresh}
           disabled={isLoadingLogs}
-          className='btn-outline-sm border-accent hover:bg-accent/10 disabled:border-gray-600 disabled:bg-transparent'
+          className='btn-outline-sm border-accent hover:bg-accent/10 disabled:border-gray-600 disabled:bg-transparent w-full sm:w-auto'
         >
           {isLoadingLogs ? 'Loading...' : 'Refresh'}
         </button>
@@ -64,10 +64,10 @@ export default function DailyLogsList({
                   <p>Trailer: {log.trailer?.trailer_number || 'Unknown'}</p>
                   <p>Created: {new Date(log.created_at).toLocaleString()}</p>
                 </div>
-                <div className='flex gap-2'>
+                <div className='flex flex-col sm:flex-row gap-2'>
                   <button
                     onClick={() => onShowMap(log)}
-                    className='btn-outline-sm border-blue-600 hover:bg-blue-600/10 flex items-center gap-1'
+                    className='btn-outline-sm border-blue-600 hover:bg-blue-600/10 flex items-center gap-1 w-full sm:w-auto'
                   >
                     <svg
                       className='w-4 h-4'
@@ -86,7 +86,7 @@ export default function DailyLogsList({
                   </button>
                   <button
                     onClick={() => onShowChart(log)}
-                    className='btn-outline-sm border-purple-600 hover:bg-purple-600/10 flex items-center gap-1'
+                    className='btn-outline-sm border-purple-600 hover:bg-purple-600/10 flex items-center gap-1 w-full sm:w-auto'
                   >
                     <svg
                       className='w-4 h-4'

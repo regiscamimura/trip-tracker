@@ -93,6 +93,7 @@ type DutyStatus = components['schemas']['DutyStatus']
 interface MapViewProps {
   dailyLog: DailyLog
   onBack: () => void
+  onViewLogBook: () => void
 }
 
 // Component to fit map bounds to show all markers
@@ -114,7 +115,11 @@ function MapBounds({ dutyStatuses }: { dutyStatuses: DutyStatus[] }) {
   return null
 }
 
-export default function MapView({ dailyLog, onBack }: MapViewProps) {
+export default function MapView({
+  dailyLog,
+  onBack,
+  onViewLogBook,
+}: MapViewProps) {
   const [dutyStatuses, setDutyStatuses] = useState<DutyStatus[]>([])
   const [isLoadingDutyStatuses, setIsLoadingDutyStatuses] = useState(false)
   const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(
@@ -228,30 +233,51 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
     )
 
   return (
-    <div className='bg-surface p-6'>
+    <div className='bg-surface p-2 sm:p-6'>
       {/* Header */}
-      <div className='flex justify-between items-center mb-4'>
-        <div>
-          <button
-            onClick={onBack}
-            className='btn-outline-sm border-gray-600 hover:bg-gray-600/10 flex items-center gap-1 mb-2'
-          >
-            <svg
-              className='w-4 h-4'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
+      <div className='flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4'>
+        <div className='w-full lg:w-auto'>
+          <div className='flex flex-col sm:flex-row gap-2 mb-2'>
+            <button
+              onClick={onBack}
+              className='btn-outline-sm border-gray-600 hover:bg-gray-600/10 flex items-center gap-1 w-full sm:w-auto'
             >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M15 19l-7-7 7-7'
-              />
-            </svg>
-            Back to List
-          </button>
-          <h2 className='text-xl text-brand'>
+              <svg
+                className='w-4 h-4'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M15 19l-7-7 7-7'
+                />
+              </svg>
+              Back to List
+            </button>
+            <button
+              onClick={onViewLogBook}
+              className='btn-outline-sm border-green-600 hover:bg-green-600/10 flex items-center gap-1 w-full sm:w-auto'
+            >
+              <svg
+                className='w-4 h-4'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                />
+              </svg>
+              View Log Book
+            </button>
+          </div>
+          <h2 className='text-lg sm:text-xl text-brand'>
             Route Map - Daily Log #{dailyLog.id}
           </h2>
           <p className='text-gray-300 text-sm'>
@@ -260,7 +286,7 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
             {new Date(dailyLog.created_at).toLocaleDateString()}
           </p>
         </div>
-        <div className='flex gap-2 text-sm'>
+        <div className='flex flex-wrap gap-2 text-xs sm:text-sm w-full lg:w-auto'>
           <div className='flex items-center gap-1'>
             <div className='w-3 h-3 rounded-full bg-gray-500'></div>
             <span className='text-gray-300'>Off Duty</span>
@@ -453,13 +479,13 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
         </div>
 
         {/* Floating Event List */}
-        <div className='absolute top-4 right-4 w-36 bg-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg z-[1000] pointer-events-auto hover:bg-gray-900/80 active:bg-gray-900/90 transition-all duration-200'>
-          <div className='p-2 border-b border-gray-700'>
+        <div className='absolute top-2 sm:top-4 right-1 sm:right-4 w-28 sm:w-36 bg-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg z-[1000] pointer-events-auto hover:bg-gray-900/80 active:bg-gray-900/90 transition-all duration-200'>
+          <div className='p-1 sm:p-2 border-b border-gray-700'>
             <h3 className='text-brand font-medium text-xs'>
               Events ({dutyStatuses.length})
             </h3>
           </div>
-          <div className='max-h-48 overflow-y-auto'>
+          <div className='max-h-20 sm:max-h-48 overflow-y-auto'>
             <div className='p-1 space-y-0.5'>
               {dutyStatuses.map((status, index) => {
                 const isFuelingStop = status.notes
@@ -469,14 +495,14 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
                 return (
                   <div
                     key={index}
-                    className={`p-1.5 rounded cursor-pointer transition-colors ${
+                    className={`p-1 sm:p-1.5 rounded cursor-pointer transition-colors ${
                       selectedEventIndex === index
                         ? 'bg-accent/30 border border-accent'
                         : 'hover:bg-gray-800/50'
                     }`}
                     onClick={() => handleEventClick(index)}
                   >
-                    <div className='flex items-center gap-1.5'>
+                    <div className='flex items-center gap-1 sm:gap-1.5'>
                       <div
                         className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                           isFuelingStop

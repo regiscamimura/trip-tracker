@@ -76,6 +76,14 @@ export default function Dashboard() {
     }
   }
 
+  const handleOpenLogBookFromModal = () => {
+    if (latestSimulatedLog) {
+      setSelectedDailyLog(latestSimulatedLog)
+      setViewMode('chart')
+      setIsModalOpen(false)
+    }
+  }
+
   const handleShowMap = (dailyLog: components['schemas']['DailyLog']) => {
     setSelectedDailyLog(dailyLog)
     setViewMode('map')
@@ -86,6 +94,14 @@ export default function Dashboard() {
     setViewMode('chart')
   }
 
+  const handleSwitchToMap = () => {
+    setViewMode('map')
+  }
+
+  const handleSwitchToChart = () => {
+    setViewMode('chart')
+  }
+
   const handleBackToList = () => {
     setSelectedDailyLog(null)
     setViewMode('list')
@@ -93,8 +109,8 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className='min-h-screen bg-base p-4'>
-        <div className='max mx-auto'>
+      <div className='min-h-screen bg-base p-2 sm:p-4'>
+        <div className='max-w-7xl mx-auto'>
           <DashboardHeader
             onLogout={handleLogout}
             onSimulateDay={handleSimulateDay}
@@ -113,13 +129,18 @@ export default function Dashboard() {
           )}
 
           {viewMode === 'map' && selectedDailyLog && (
-            <MapView dailyLog={selectedDailyLog} onBack={handleBackToList} />
+            <MapView
+              dailyLog={selectedDailyLog}
+              onBack={handleBackToList}
+              onViewLogBook={handleSwitchToChart}
+            />
           )}
 
           {viewMode === 'chart' && selectedDailyLog && (
             <LogBookView
               dailyLog={selectedDailyLog}
               onBack={handleBackToList}
+              onViewMap={handleSwitchToMap}
             />
           )}
         </div>
@@ -131,6 +152,7 @@ export default function Dashboard() {
         onClose={handleCloseModal}
         simulationResult={simulationResult}
         onOpenMap={handleOpenMapFromModal}
+        onOpenLogBook={handleOpenLogBookFromModal}
       />
     </>
   )

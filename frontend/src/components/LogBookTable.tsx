@@ -169,7 +169,7 @@ export default function LogBookTable({ dutyStatuses }: LogBookTableProps) {
   }, [])
 
   return (
-    <div className='relative' ref={tableRef}>
+    <div className='relative overflow-x-auto' ref={tableRef}>
       {/* Canvas overlay for drawing lines */}
       <canvas
         ref={canvasRef}
@@ -177,7 +177,7 @@ export default function LogBookTable({ dutyStatuses }: LogBookTableProps) {
         style={{ left: 0, top: 0 }}
       />
 
-      <div className='relative'>
+      <div className='relative min-w-[800px]'>
         <table className='border-collapse'>
           {/* Time Header Row */}
           <thead>

@@ -5,6 +5,7 @@ interface SimulationResultModalProps {
   onClose: () => void
   simulationResult: string
   onOpenMap: () => void
+  onOpenLogBook: () => void
 }
 
 export default function SimulationResultModal({
@@ -12,6 +13,7 @@ export default function SimulationResultModal({
   onClose,
   simulationResult,
   onOpenMap,
+  onOpenLogBook,
 }: SimulationResultModalProps) {
   // Disable body scrolling when modal is open
   useEffect(() => {
@@ -30,15 +32,15 @@ export default function SimulationResultModal({
   if (!isOpen) return null
 
   return (
-    <div className='fixed inset-0 bg-white/50 bg-opacity-5 flex items-center justify-center z-50 p-4 backdrop-blur-xs'>
-      <div className='bg-black/60 border border-white/40 max-w-4xl w-full max-h-[80vh] overflow-hidden'>
+    <div className='fixed inset-0 bg-white/50 bg-opacity-5 flex items-center justify-center z-50 p-2 sm:p-4 backdrop-blur-xs'>
+      <div className='bg-black/60 border border-white/40 max-w-4xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden'>
         {/* Header */}
-        <div className='flex justify-between items-center p-4 border-b border-white/40'>
-          <h2 className='text-xl text-brand'>Simulation Result</h2>
-          <div className='flex gap-3'>
+        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border-b border-white/40'>
+          <h2 className='text-lg sm:text-xl text-brand'>Simulation Result</h2>
+          <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto'>
             <button
               onClick={onOpenMap}
-              className='btn-outline border-blue-600 hover:bg-blue-600/10 flex items-center gap-2'
+              className='btn-outline border-blue-600 hover:bg-blue-600/10 flex items-center gap-2 w-full sm:w-auto'
             >
               <svg
                 className='w-4 h-4'
@@ -56,8 +58,27 @@ export default function SimulationResultModal({
               View Map
             </button>
             <button
+              onClick={onOpenLogBook}
+              className='btn-outline border-green-600 hover:bg-green-600/10 flex items-center gap-2 w-full sm:w-auto'
+            >
+              <svg
+                className='w-4 h-4'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                />
+              </svg>
+              View Log Book
+            </button>
+            <button
               onClick={onClose}
-              className='btn-outline border-gray-600 hover:bg-gray-600/10'
+              className='btn-outline border-gray-600 hover:bg-gray-600/10 w-full sm:w-auto'
             >
               Close
             </button>
