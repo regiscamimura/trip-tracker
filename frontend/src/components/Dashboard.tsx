@@ -6,6 +6,7 @@ import type { components } from '@/types/api'
 import DashboardHeader from './DashboardHeader'
 import DailyLogsList from './DailyLogsList'
 import MapView from './MapView'
+import LogBookView from './LogBookView'
 import SimulationResultModal from './SimulationResultModal'
 
 export default function Dashboard() {
@@ -33,12 +34,12 @@ export default function Dashboard() {
     try {
       const { data, error } = await api.GET('/api/daily-logs')
       if (error) {
-        console.error('Failed to load daily logs:', error)
+        // handle error (removed console)
       } else if (data) {
         setDailyLogs(data)
       }
-    } catch (err) {
-      console.error('Error loading daily logs:', err)
+    } catch {
+      // handle error (removed console)
     } finally {
       setIsLoadingLogs(false)
     }
@@ -116,44 +117,10 @@ export default function Dashboard() {
           )}
 
           {viewMode === 'chart' && selectedDailyLog && (
-            <div className='bg-surface p-4'>
-              <div className='flex justify-between items-center mb-2'>
-                <div>
-                  <button
-                    onClick={handleBackToList}
-                    className='btn-outline-sm border-gray-600 hover:bg-gray-600/10 flex items-center gap-1 mb-2'
-                  >
-                    <svg
-                      className='w-4 h-4'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M15 19l-7-7 7-7'
-                      />
-                    </svg>
-                    Back to List
-                  </button>
-                  <h2 className='text-xl text-brand'>
-                    Chart View - Daily Log #{selectedDailyLog.id}
-                  </h2>
-                  <p className='text-gray-300 text-sm'>
-                    {selectedDailyLog.driver?.user?.first_name}{' '}
-                    {selectedDailyLog.driver?.user?.last_name} •
-                    {new Date(selectedDailyLog.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className='flex justify-center items-center h-64'>
-                <div className='text-brand text-lg'>
-                  Chart view coming soon...
-                </div>
-              </div>
-            </div>
+            <LogBookView
+              dailyLog={selectedDailyLog}
+              onBack={handleBackToList}
+            />
           )}
         </div>
       </div>

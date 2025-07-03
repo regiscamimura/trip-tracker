@@ -381,7 +381,7 @@ export function useSimulator() {
         )
 
         if (dutyStatusError) {
-          console.error('Failed to create duty status:', dutyStatusError)
+          // handle error (removed console)
         }
       }
 

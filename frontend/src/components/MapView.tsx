@@ -45,7 +45,7 @@ import 'leaflet/dist/leaflet.css'
 
 // Fix for Leaflet marker icons in React
 import L from 'leaflet'
-delete (L.Icon.Default.prototype as any)._getIconUrl
+delete (L.Icon.Default.prototype as unknown)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -120,7 +120,7 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
   const [selectedEventIndex, setSelectedEventIndex] = useState<number | null>(
     null
   )
-  const [mapRef, setMapRef] = useState<any>(null)
+  const [mapRef, setMapRef] = useState<unknown>(null)
   const [roadCoordinates, setRoadCoordinates] = useState<
     Array<{ lat: number; lng: number }>
   >([])
@@ -154,21 +154,21 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
             }))
 
           if (coordinates.length >= 2) {
-            console.log('Fetching road coordinates for:', coordinates)
+            // Fetching road coordinates
             try {
               const roadCoords =
                 await RouteService.getMultiPointRoute(coordinates)
-              console.log('Road coordinates received:', roadCoords)
+              // Road coordinates received
               setRoadCoordinates(roadCoords)
-            } catch (error) {
-              console.error('Error fetching road coordinates:', error)
+            } catch {
+              // Error fetching road coordinates
               // Fallback to direct coordinates
               setRoadCoordinates(coordinates)
             }
           }
         }
-      } catch (err) {
-        console.error('Error loading duty statuses:', err)
+      } catch {
+        // handle error (removed console)
       } finally {
         setIsLoadingDutyStatuses(false)
       }
@@ -564,10 +564,6 @@ export default function MapView({ dailyLog, onBack }: MapViewProps) {
               <div>
                 <strong>Total Time:</strong>{' '}
                 {(() => {
-                  const startTime = new Date(dutyStatuses[0].timestamp)
-                  const endTime = new Date(
-                    dutyStatuses[dutyStatuses.length - 1].timestamp
-                  )
                   const totalHours = calculateTimeDifference(
                     dutyStatuses[0].timestamp,
                     dutyStatuses[dutyStatuses.length - 1].timestamp

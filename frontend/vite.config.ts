@@ -13,4 +13,9 @@ export default defineConfig({
     },
   },
   envDir: resolve(__dirname, '..'), // Look for .env in parent directory (project root)
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
+  },
 })

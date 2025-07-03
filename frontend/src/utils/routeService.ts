@@ -31,17 +31,6 @@ export class RouteService {
     const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
     if (!token) {
-      console.error(`
-🚨 Mapbox Access Token Required!
-To use road-following routes, you need a Mapbox access token:
-
-1. Sign up at https://account.mapbox.com/ (free)
-2. Create a new access token
-3. Add to your .env file:
-   VITE_MAPBOX_ACCESS_TOKEN=your_token_here
-
-For now, routes will use straight lines.
-      `)
       return ''
     }
 
@@ -53,8 +42,7 @@ For now, routes will use straight lines.
    */
   static async getRouteCoordinates(
     start: RouteCoordinate,
-    end: RouteCoordinate,
-    profile: 'driving' | 'driving-traffic' = 'driving'
+    end: RouteCoordinate
   ): Promise<RouteCoordinate[]> {
     const accessToken = this.getAccessToken()
 
@@ -67,8 +55,6 @@ For now, routes will use straight lines.
       const coordinates = `${start.lng},${start.lat};${end.lng},${end.lat}`
       const url = `${this.BASE_URL}/${coordinates}?geometries=geojson&access_token=${accessToken}`
 
-      console.log('Mapbox API URL:', url)
-
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -78,7 +64,6 @@ For now, routes will use straight lines.
       }
 
       const data: MapboxRouteResponse = await response.json()
-      console.log('Mapbox API response:', data)
 
       if (!data.routes || data.routes.length === 0) {
         throw new Error('No route found')
@@ -93,8 +78,7 @@ For now, routes will use straight lines.
       )
 
       return coordinates_result
-    } catch (error) {
-      console.error('Error fetching route coordinates:', error)
+    } catch {
       // Fallback to direct line if API fails
       return [start, end]
     }
@@ -104,8 +88,7 @@ For now, routes will use straight lines.
    * Get route with multiple waypoints
    */
   static async getMultiPointRoute(
-    waypoints: RouteCoordinate[],
-    profile: 'driving' | 'driving-traffic' = 'driving'
+    waypoints: RouteCoordinate[]
   ): Promise<RouteCoordinate[]> {
     if (waypoints.length < 2) {
       return waypoints
@@ -124,8 +107,6 @@ For now, routes will use straight lines.
         .join(';')
       const url = `${this.BASE_URL}/${coordinates}?geometries=geojson&access_token=${accessToken}`
 
-      console.log('Mapbox multi-point URL:', url)
-
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -135,7 +116,6 @@ For now, routes will use straight lines.
       }
 
       const data: MapboxRouteResponse = await response.json()
-      console.log('Mapbox multi-point response:', data)
 
       if (!data.routes || data.routes.length === 0) {
         throw new Error('No route found')
@@ -150,8 +130,7 @@ For now, routes will use straight lines.
       )
 
       return coordinates_result
-    } catch (error) {
-      console.error('Error fetching multi-point route:', error)
+    } catch {
       // Fallback to direct lines if API fails
       return waypoints
     }
